@@ -12,7 +12,7 @@ public class AgentConnection
     private string? _sessionCode;
     private bool _isStreaming = false;
 
-    private const string HubUrl = "https://localhost:7228/hubs/remote";
+    private const string HubUrl = "https://remotelink-production.up.railway.app/hubs/remote";
 
     public async Task StartAsync()
     {
