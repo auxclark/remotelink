@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 
-const HUB_URL = "/hubs/remote";
+const HUB_URL = "https://remotelink-production.up.railway.app/hubs/remote";
 
 export const useSignalR = () => {
   const connectionRef = useRef<signalR.HubConnection | null>(null);
