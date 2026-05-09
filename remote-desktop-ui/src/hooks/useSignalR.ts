@@ -15,10 +15,9 @@ export const useSignalR = () => {
       .build();
 
     connectionRef.current = connection;
-
     connection.start()
       .then(() => setIsConnected(true))
-      .catch((err) => console.error("SignalR connection error:", err));
+      .catch((err) => console.error("SignalR error:", err));
 
     return () => { connection.stop(); };
   }, []);
@@ -35,33 +34,38 @@ export const useSignalR = () => {
     return await connectionRef.current.invoke<boolean>("JoinSession", code);
   };
 
- const onReceiveFrame = (callback: (frameData: ArrayBuffer) => void) => {
-    connectionRef.current?.on("ReceiveFrame", (data: any) => {
-        // SignalR sends binary as a base64 string or Uint8Array
-        if (typeof data === "string") {
-            // base64 string — convert to ArrayBuffer
-            const binary = atob(data);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-                bytes[i] = binary.charCodeAt(i);
-            }
-            callback(bytes.buffer);
-        } else if (data instanceof ArrayBuffer) {
-            callback(data);
-        } else if (data?.type === "Buffer" && Array.isArray(data.data)) {
-            const bytes = new Uint8Array(data.data);
-            callback(bytes.buffer);
-        } else {
-            // Try treating as array of numbers
-            const bytes = new Uint8Array(data);
-            callback(bytes.buffer);
-        }
-    });
-};
-
-  const onSessionEnded = (callback: () => void) => {
-    connectionRef.current?.on("SessionEnded", callback);
+  const requestControl = async (code: string) => {
+    await connectionRef.current?.invoke("RequestControl", code);
   };
 
-  return { isConnected, sessionCode, createSession, joinSession, onReceiveFrame, onSessionEnded };
+  const respondToControl = async (code: string, granted: boolean) => {
+    await connectionRef.current?.invoke("RespondToControl", code, granted);
+  };
+
+  const revokeControl = async (code: string) => {
+    await connectionRef.current?.invoke("RevokeControl", code);
+  };
+
+  const sendFrame = async (code: string, frameBase64: string) => {
+    await connectionRef.current?.invoke("SendFrame", code, frameBase64);
+  };
+
+  const sendInput = async (code: string, input: object) => {
+    await connectionRef.current?.invoke("SendInput", code, input);
+  };
+
+  const on = (event: string, callback: (...args: any[]) => void) => {
+    connectionRef.current?.on(event, callback);
+  };
+
+  const off = (event: string) => {
+    connectionRef.current?.off(event);
+  };
+
+  return {
+    isConnected, sessionCode,
+    createSession, joinSession,
+    requestControl, respondToControl, revokeControl,
+    sendFrame, sendInput, on, off
+  };
 };
