@@ -9,4 +9,5 @@ public static class HubConstants
     public const string PermissionRequested = "PermissionRequested";
     public const string PermissionGranted = "PermissionGranted";
     public const string PermissionDenied = "PermissionDenied";
+    public const string ControlRevoked = "ControlRevoked";
 }

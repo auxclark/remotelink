@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSignalR(options =>
 {
-    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
+    options.MaximumReceiveMessageSize = 10 * 1024 * 1024;
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -23,12 +23,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseCors("ReactApp");
 app.UseAuthorization();
 app.MapControllers();
